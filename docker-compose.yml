@@ -1,0 +1,38 @@
+
+services:
+  spring-api:
+    build:
+      context: ./demo  # Caminho para o Dockerfile do backend
+    ports:
+      - "8080:8080"  # Mapeia a porta 8080 do contêiner para a porta 8080 local
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/portalEgresso  # Conexão com o banco de dados
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+    depends_on:
+      - db  # Garante que o banco de dados esteja pronto antes de iniciar o backend
+
+  front-app:
+    build:
+      context: ./front-app  # Caminho para o Dockerfile do frontend
+    ports:
+      - "3000:3000"  # Exponha a porta 3000 para o React (servidor de desenvolvimento)
+    depends_on:
+      - spring-api  # Garante que o backend esteja pronto antes de iniciar o frontend
+    environment:
+      - REACT_APP_API_URL=http://spring-api:8080  # URL para consumir a API backend
+
+  db:
+    image: postgres:latest  # Usando a imagem oficial do PostgreSQL
+    environment:
+      POSTGRES_DB: portalEgresso  # Nome do banco de dados
+      POSTGRES_USER: postgres  # Nome de usuário
+      POSTGRES_PASSWORD: admin  # Senha do banco
+    ports:
+      - "5432:5432"  # Expondo a porta do banco de dados
+    volumes:
+      - postgres-data:/var/lib/postgresql/data  # Persistência de dados
+
+volumes:
+  postgres-data:
+    driver: local
