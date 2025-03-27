@@ -1,20 +1,17 @@
-# Etapa 1: Usar a imagem do Node.js
-FROM node:16
+# Usa uma versão mais recente do Node.js
+FROM node:20
 
-# Definir o diretório de trabalho
 WORKDIR /app
 
-# Copiar o package.json e o package-lock.json
+# Copia apenas os arquivos necessários primeiro
 COPY package.json package-lock.json ./
 
-# Instalar as dependências
+# Instala as dependências
 RUN npm install
 
-# Copiar o código-fonte da aplicação
+# Copia o código-fonte
 COPY . .
 
-# Expor a porta onde o React irá rodar (3000 por padrão)
 EXPOSE 3000
 
-# Rodar a aplicação React no modo de desenvolvimento
 CMD ["npm", "start"]
