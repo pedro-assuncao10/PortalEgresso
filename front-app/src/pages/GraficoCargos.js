@@ -1,21 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  Box,
-  Card,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  AppBar,
-  Toolbar,
-  IconButton,
-} from "@mui/material";
+import { Box, Typography, Paper, AppBar, Toolbar, IconButton, Card, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { PieChart, Pie, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
@@ -23,6 +9,8 @@ export default function GraficoCargos() {
   const [tabelaDados, setTabelaDados] = useState([]);
   const [cargoData, setCargoData] = useState([]);
   const [cursoData, setCursoData] = useState([]);
+  const [depoimentos, setDepoimentos] = useState([]);
+  const [depoimentoAtual, setDepoimentoAtual] = useState(null);
   const navigate = useNavigate();
   // Função para verificar o tipo de usuário no localStorage
   const verificarTipoUsuario = () => {
@@ -37,6 +25,14 @@ export default function GraficoCargos() {
         const cursosResponse = await axios.get("http://localhost:8080/api/curso-egresso/todos");
         // Buscar TODOS os cargos
         const cargosResponse = await axios.get("http://localhost:8080/api/cargos/todos");
+        //busca todos os depoimentos
+        const depoimentosResponse = await axios.get("http://localhost:8080/api/depoimentos");
+
+        setDepoimentos(depoimentosResponse.data);
+
+        if (depoimentosResponse.data.length > 0) {
+          setDepoimentoAtual(depoimentosResponse.data[0]); // Primeiro depoimento
+        }
 
         const cursos = cursosResponse.data;
         const cargos = cargosResponse.data;
@@ -90,36 +86,185 @@ export default function GraficoCargos() {
     fetchData();
   }, []);
 
+   // Alternar depoimentos dinamicamente
+   useEffect(() => {
+    if (depoimentos.length === 0) return;
+
+    const interval = setInterval(() => {
+      setDepoimentoAtual((prev) => {
+        const currentIndex = depoimentos.findIndex((d) => d.idDepoimento === prev?.idDepoimento);
+        const nextIndex = (currentIndex + 1) % depoimentos.length;
+        return depoimentos[nextIndex];
+      });
+    }, 5000); // Troca a cada 5 segundos
+
+    return () => clearInterval(interval);
+  }, [depoimentos]);
+
   return (
-    <Box sx={{ width: "50%", padding: 2, margin: "0 auto" }}>
+    <Box sx={{ width: "90%", padding: 2, margin: "0 auto" }}>
       {/* Barra fixa */}
       <AppBar position="fixed" sx={{ bgcolor: "#4CAF50", width: "50%", left: "25%" }}>
-        <Toolbar>
-        <IconButton
-            edge="start"
-            color="inherit"
-            onClick={() => {
-              const tipoUsuario = verificarTipoUsuario();
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box display="flex" alignItems="center">
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={() => {
+                const tipoUsuario = verificarTipoUsuario();
+                if (tipoUsuario === "coordenador") {
+                  navigate("/homeCoordenador"); // Navega para a Home do Coordenador
+                } else {
+                  navigate("/home"); // Navega para a Home do Egresso
+                }
+              }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="h6">Página Pública dos Egressos da UFMA</Typography>
+          </Box>
 
-              if (tipoUsuario === "coordenador") {
-                navigate("/homeCoordenador"); // Navega para a Home do Coordenador
-              } else {
-                navigate("/home"); // Navega para a Home do Egresso
-              }
+          {/* Botão "Faça Login" no canto direito */}
+          <Button 
+            color="inherit" 
+            variant="outlined" 
+            sx={{
+              borderColor: "white", 
+              color: "white", 
+              "&:hover": { backgroundColor: "white", color: "#4CAF50" }
             }}
+            onClick={() => navigate("/login")}
           >
-            <ArrowBackIcon />
-          </IconButton>
-          <Typography variant="h6">Gráficos e Tabela de Egressos</Typography>
+            Faça Login
+          </Button>
         </Toolbar>
       </AppBar>
 
+      {/* Novo balão verde para texto personalizado */}
+      <Box 
+          display="flex" 
+          flexDirection="column" 
+          alignItems="center" 
+          justifyContent="center"
+          width="63%" 
+          margin="0 auto"
+          mt={12}
+      >
+        <Paper
+          sx={{
+            backgroundColor: "#4CAF50",
+            color: "white",
+            borderRadius: "20px",
+            padding: "20px",
+            maxWidth: "80%",
+            minWidth: "400px",
+            textAlign: "left", // Alinhando o texto à esquerda
+            fontWeight: "bold",
+            lineHeight: "1.6"
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            📢 Bem-vindo ao Portal de Egressos!
+          </Typography>
+
+          <Typography variant="body1" paragraph>
+            Nosso sistema foi desenvolvido para conectar egressos, coordenadores e estudantes, 
+            promovendo uma rede de informações valiosa sobre trajetórias acadêmicas e profissionais.
+          </Typography>
+
+          <Typography variant="body1" paragraph>
+            🔹 <strong>Depoimentos Inspiradores:</strong> Leia histórias e experiências compartilhadas 
+            pelos egressos sobre suas carreiras, desafios e conquistas.
+          </Typography>
+
+          <Typography variant="body1" paragraph>
+            📊 <strong>Gráficos Interativos:</strong>
+            <br />- <strong>Gráfico de Pizza:</strong> Visualize os principais cargos ocupados pelos egressos.
+            <br />- <strong>Gráfico de Barras:</strong> Compare os cursos e a distribuição dos profissionais no mercado.
+          </Typography>
+
+          <Typography variant="body1" paragraph>
+            📄 <strong>Tabela de Egressos:</strong> Explore uma base de dados com informações detalhadas, 
+            incluindo nome, curso, ano de formação e cargo atual.
+          </Typography>
+
+          <Typography variant="body1">
+            Nosso objetivo é fortalecer a comunidade acadêmica, facilitar conexões e fornecer insights 
+            valiosos sobre o futuro profissional dos egressos. 🚀
+          </Typography>
+        </Paper>
+      </Box>
+
+
+      {/* Balão fixo para depoimentos */}
+      {depoimentoAtual && (
+        <Box 
+          display="flex" 
+          flexDirection="column" 
+          alignItems="center" 
+          justifyContent="center"
+          width="50%" 
+          margin="0 auto"
+          mt={12}
+        >
+          <Paper
+            sx={{
+              backgroundColor: "#4CAF50",
+              color: "white",
+              borderRadius: "20px",
+              padding: "10px 20px",
+              width: "100%",
+              textAlign: "center",
+              fontWeight: "bold",
+              boxShadow: 3,
+            }}
+          >
+            {depoimentoAtual.egresso.nome} • {depoimentoAtual.egresso.descricao}
+          </Paper>
+          <Paper
+            sx={{
+              backgroundColor: "#A5D6A7",
+              color: "black",
+              borderRadius: "20px",
+              padding: "20px",
+              marginTop: "10px",
+              width: "100%",
+              minHeight: "120px",
+              textAlign: "justify",
+              fontSize: "16px",
+              boxShadow: 3,
+            }}
+          >
+            {depoimentoAtual.texto}
+          </Paper>
+        </Box>
+      )}
+
       <Box mt={10}>
         {/* Gráficos */}
-        <Box display="flex" justifyContent="space-around" width="100%" mb={3}>
+          <Box 
+            display="flex" 
+            justifyContent="center" 
+            alignItems="center" 
+            width="100%" 
+            mb={3} 
+            gap={4} // Reduz a separação entre os gráficos
+          >
           <PieChart width={300} height={300}>
-            <Pie data={cargoData} dataKey="value" cx="50%" cy="50%" outerRadius={100} fill="#82ca9d" label />
+            <Pie
+              data={cargoData}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              fill="#82ca9d"
+              label
+            />
+            <Tooltip />
+            <Legend />
           </PieChart>
+
           <BarChart width={300} height={300} data={cursoData}>
             <XAxis dataKey="name" />
             <YAxis />
@@ -130,7 +275,7 @@ export default function GraficoCargos() {
         </Box>
 
         {/* Tabela de Egressos */}
-        <Card sx={{ p: 2, borderRadius: 3, bgcolor: "#4CAF50", width: "100%", minHeight: 150 }}>
+        <Card sx={{ p: 2, borderRadius: 3, bgcolor: "#4CAF50", width: "50%", margin: "0 auto", minHeight: 150 }}>
           <Typography color="white" fontWeight="bold" mb={2}>
             Tabela de Egressos
           </Typography>

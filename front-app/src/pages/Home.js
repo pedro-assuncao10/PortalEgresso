@@ -19,6 +19,7 @@ const Home = () => {
   const [painelAberto, setPainelAberto] = useState(false);
   const [cursoSelecionado, setCursoSelecionado] = useState(null);
   const fecharPainelSelecaoCurso = () => setPainelSelecaoAbertoCurso(false);
+  const [idCursoSelecionado, setIdCursoSelecionado] = useState("");
 
   const [painelSelecaoAbertoCurso, setPainelSelecaoAbertoCurso] = useState(false);
   const [painelAbertoCurso, setPainelAbertoCurso] = useState(false);
@@ -368,21 +369,98 @@ const Home = () => {
     setEgresso(egressoSelecionado);
     setPainelAbertoEgresso(true);
   };
+
+  const enviarFoto = async (arquivo) => {
+    const formData = new FormData();
+    formData.append("file", arquivo);
+  
+    try {
+      const resposta = await fetch("http://localhost:8080/api/egressos/upload", {
+        method: "POST",
+        body: formData,
+      });
+  
+      if (!resposta.ok) {
+        throw new Error("Erro ao enviar a imagem.");
+      }
+  
+      const caminhoImagem = await resposta.text(); // Ex: "/uploads/imagem.jpg"
+      return caminhoImagem;
+    } catch (erro) {
+      console.error("Erro no upload da imagem:", erro);
+      alert("Erro ao fazer upload da imagem.");
+      return null;
+    }
+  };
+
+  const handleSelecionarImagem = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+  
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      const response = await fetch("http://localhost:8080/api/upload/foto", {
+        method: "POST",
+        body: formData,
+      });
+  
+      if (!response.ok) throw new Error("Erro ao enviar imagem");
+  
+      const caminhoFoto = await response.text(); // Ex: "/uploads/minhafoto.jpg"
+      setEgresso((prev) => ({ ...prev, foto: caminhoFoto }));
+      alert("Foto enviada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao enviar imagem:", error);
+      alert("Erro ao enviar imagem: " + error.message);
+    }
+  };
+  
+  
+  
   
   return (
     <Box display="flex" flexDirection="column" alignItems="center" p={3}>
-      
+
+      {/* Menu Lateral */}
+      <Drawer anchor="right" open={menuAberto} onClose={() => setMenuAberto(false)}>
+        <Box sx={{ width: 250, p: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+          {/* Botão de Fechar */}
+          <IconButton sx={{ alignSelf: "flex-end" }} onClick={() => setMenuAberto(false)}>
+            <CloseIcon />
+          </IconButton>
+
+          {/* Botões do Menu */}
+          <Button variant="contained" sx={{ bgcolor: "#4CAF50" }} onClick={() => {setModoEdicao(true); setPainelAbertoEgresso(true)}}>Editar dados</Button>
+          {/* Botão para deletar egresso */}
+          <Button
+            variant="contained"
+            sx={{ bgcolor: "#4CAF50", color: "white" }}
+            onClick={deletarEgresso}
+          >
+            Deletar Conta
+          </Button>
+          <Button variant="contained" sx={{ bgcolor: "#4CAF50" }} onClick={() => window.location.href = '/'}>Sair da conta</Button>
+          <Box sx={{ width: "100%", height: "1px", bgcolor: "gray", my: 1 }} />
+        </Box>
+      </Drawer>
+
+      {/* Conteúdo principal */}
+      <Box display="flex" justifyContent="space-between" flexDirection="column" alignItems="center" p={3} mt={10} style={{ paddingTop: "60px", width: "50%" }} >
+      {/* Barra de Navegação */}
       {/* Barra de Navegação */}
       <Box
         sx={{
           position: "fixed",
           top: 0,
-          width: "930px",
           backgroundColor: "#2E7D32",
+          width: "50%",
+          paddingTop: "60px",
           padding: "10px",
           display: "flex",
           justifyContent: "center",
-          alignItems: "flex-start",
+          alignItems: "center",
           gap: "20px",
           borderRadius: "0px 0px 20px 20px",
           zIndex: 1000
@@ -397,7 +475,7 @@ const Home = () => {
         <Button variant="contained" sx={{ bgcolor: "#4CAF50" }} onClick={() => navigate("/grupos")}>
           Grupo de Discussão
         </Button>
-        <Button variant="contained" sx={{ bgcolor: "#4CAF50" }} onClick={() => navigate("/graficoCargos")}>
+        <Button variant="contained" sx={{ bgcolor: "#4CAF50" }} onClick={() => navigate("/")}>
           dados dos egressos
         </Button>
         {/* Ícone de voltar */}
@@ -412,40 +490,19 @@ const Home = () => {
           <MenuIcon />
         </IconButton>
       </Box>
-
-      {/* Menu Lateral */}
-      <Drawer anchor="right" open={menuAberto} onClose={() => setMenuAberto(false)}>
-        <Box sx={{ width: 250, p: 2, display: "flex", flexDirection: "column", gap: 2 }}>
-          {/* Botão de Fechar */}
-          <IconButton sx={{ alignSelf: "flex-end" }} onClick={() => setMenuAberto(false)}>
-            <CloseIcon />
-          </IconButton>
-
-          {/* Botões do Menu */}
-          <Button variant="contained" sx={{ bgcolor: "#4CAF50" }} onClick={() => setPainelAbertoEgresso(true)}>Editar dados</Button>
-          {/* Botão para deletar egresso */}
-          <Button
-            variant="contained"
-            sx={{ bgcolor: "#4CAF50", color: "white" }}
-            onClick={deletarEgresso}
-          >
-            Deletar Conta
-          </Button>
-          <Button variant="contained" sx={{ bgcolor: "#4CAF50" }} onClick={() => window.location.href = '/'}>Sair da conta</Button>
-          <Box sx={{ width: "100%", height: "1px", bgcolor: "gray", my: 1 }} />
-        </Box>
-      </Drawer>
-
-
-      {/* Conteúdo principal */}
-      <Box display="flex" justifyContent="space-between"flexDirection="column" alignItems="flex-start" p={3} mt={10} style={{ paddingTop: "60px" }} >
-
         {/* Perfil + Cargo + Ações */}
         <Box display="flex" width="100%" justifyContent="space-between" gap={3} mb={3}>
 
           {/* Balão de Perfil */}
           <Card sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "flex", borderRadius: 3, bgcolor: "#4CAF50", minWidth: 250, minHeight: 180 }}>
-            <Avatar src={egresso?.foto} sx={{ width: 80, height: 80, mb: 1 }} />
+            <Avatar
+              src={
+                egresso?.foto?.startsWith("http")
+                  ? egresso.foto
+                  : `http://localhost:8080/uploads/${egresso?.foto}`
+              }
+              sx={{ width: 80, height: 80, mb: 1 }}
+            />
             <Typography color="white" fontWeight="bold">{egresso ? egresso.nome : "Carregando..."}</Typography>
             <Typography color="white">{egresso?.email || "Email não informado"}</Typography>
             <Typography color="white">{egresso?.linkedin ? `LinkedIn: ${egresso.linkedin}` : "Sem LinkedIn"}</Typography>
@@ -724,15 +781,6 @@ const Home = () => {
 
                 <TextField
                   fullWidth
-                  label="Foto URL"
-                  name="foto"
-                  value={egresso.foto}
-                  onChange={(e) => setEgresso({ ...egresso, foto: e.target.value })}
-                  sx={{ mb: 2, bgcolor: "white" }}
-                />
-
-                <TextField
-                  fullWidth
                   label="LinkedIn"
                   name="linkedin"
                   value={egresso.linkedin}
@@ -783,10 +831,35 @@ const Home = () => {
                   label="ID do Curso"
                   name="idCurso"
                   type="number"
-                  value={egresso.idCurso}
-                  onChange={(e) => setEgresso({ ...egresso, idCurso: e.target.value })}
-                  sx={{ mb: 2, bgcolor: "white" }}
+                  value={idCursoSelecionado || ""}
+                  onClick={() => setPainelListarCursosAberto(true)} // Abre o painel ao clicar
+                  sx={{ mb: 2, bgcolor: "white", cursor: "pointer" }}
+                  InputProps={{ readOnly: true }} // Torna o campo apenas leitura
                 />
+
+                <Typography variant="subtitle1" color="white" sx={{ mt: 2 }}>
+                  Foto de Perfil
+                </Typography>
+
+                <Button
+                  variant="outlined"
+                  component="label"
+                  sx={{ color: "white", borderColor: "white", mb: 1 }}
+                >
+                  Selecionar Imagem
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={handleSelecionarImagem}
+                  />
+                </Button>
+
+                {egresso.foto && (
+                  <Typography variant="body2" color="white" sx={{ mb: 2 }}>
+                    Arquivo enviado: {egresso.foto}
+                  </Typography>
+                )}
 
                 <Box display="flex" justifyContent="space-between" mt={3}>
                   <Button
@@ -833,15 +906,20 @@ const Home = () => {
                     sx={{
                       p: 2,
                       mb: 2,
-                      bgcolor: "#4CAF50",
+                      bgcolor: idCursoSelecionado === curso.idCurso ? "#2E7D32" : "#4CAF50", // Destaca o curso selecionado
                       color: "white",
                       textAlign: "center",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      setIdCursoSelecionado(curso.idCurso);
+                      setEgresso({ ...egresso, idCurso: curso.idCurso }); // Atualiza o campo do egresso
+                      fecharPainelListarCursos(); // Fecha o painel após a seleção
                     }}
                   >
                     {curso.nome} - {curso.nivel}
                   </Paper>
                 ))}
-
                 <Button variant="outlined" sx={{ color: "black", borderColor: "black", mt: 2 }} onClick={fecharPainelListarCursos}>
                   Fechar
                 </Button>
@@ -851,10 +929,26 @@ const Home = () => {
         </Box>
 
         {/* Depoimento */}
-        <Card sx={{ p: 2, mb: 3, borderRadius: 3, bgcolor: "#4CAF50", width: "100%", minHeight: 150 }}>
+        <Card 
+          sx={{ 
+            p: 2, 
+            mb: 3, 
+            borderRadius: 3, 
+            bgcolor: "#4CAF50", 
+            width: "100%", 
+            minHeight: 150, 
+            maxWidth: "900px" // Define um limite para a largura
+          }}
+        >
           <Typography 
             color="white" 
-            sx={{ fontFamily: "Courier New, monospace", fontStyle: "italic" }}
+            sx={{ 
+              fontFamily: "Courier New, monospace", 
+              fontStyle: "italic", 
+              wordWrap: "break-word", // Quebra palavras longas
+              overflowWrap: "break-word", // Quebra palavras quando necessário
+              whiteSpace: "normal" // Garante que o texto quebre corretamente
+            }}
           >
             {`"${egresso?.texto || "Depoimento do egresso..."}"`}
           </Typography>

@@ -28,7 +28,7 @@ export default function Login() {
       // Verificando o tipo do usuário
       if (coordenador.tipo === "egresso") {
         navigate("/home"); // Redireciona para a Home do Egresso
-      } else if (coordenador.tipo === "coordenador") {
+      } else if (coordenador.tipo === "coordenador" || coordenador.tipo === "super") {
         navigate("/homeCoordenador"); // Redireciona para a Home do Coordenador
       } else {
         setErro("Tipo de usuário inválido!");
@@ -69,7 +69,7 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Texto e botão de cadastro */}
+        {/* Texto e botão de cadastro
         <p style={{ marginTop: "20px", fontSize: "16px", color: "#555" }}>
           Novo por aqui? Cadastre-se!
         </p>
@@ -87,7 +87,7 @@ export default function Login() {
           }}
         >
           Cadastro
-        </button>
+        </button> */}
 
         {/* Rodapé */}
         <p style={{ fontSize: "12px", color: "#4CAF50", opacity: 0.5, marginTop: "20px" }}>

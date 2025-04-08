@@ -7,6 +7,8 @@ import com.example.demo.repository.CoordenadorRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 @Component
 public class SuperUserInitializer implements CommandLineRunner {
@@ -34,7 +36,8 @@ public class SuperUserInitializer implements CommandLineRunner {
         if (coordenadorRepository.findByLogin(superUserLogin).isEmpty()) {
             Coordenador superUser = new Coordenador();
             superUser.setLogin(superUserLogin);
-            superUser.setSenha(superUserPassword);
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            superUser.setSenha(encoder.encode(superUserPassword));
             superUser.setTipo("super");
 
             coordenadorRepository.save(superUser);
