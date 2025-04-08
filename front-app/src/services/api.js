@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Criando instância do Axios
 const api = axios.create({
-  baseURL: "http://localhost:8080/api", 
+  baseURL: "https://merry-amazement-production.up.railway.app/", 
   withCredentials: true, // Garante que cookies sejam enviados (se necessário)
   headers: {
     "Content-Type": "application/json",
