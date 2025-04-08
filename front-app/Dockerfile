@@ -1,17 +1,13 @@
-# Usa uma versão mais recente do Node.js
-FROM node:20
-
+# Etapa 1: build da aplicação React
+FROM node:20 as build
 WORKDIR /app
-
-# Copia apenas os arquivos necessários primeiro
-COPY package.json package-lock.json ./
-
-# Instala as dependências
+COPY package*.json ./
 RUN npm install
-
-# Copia o código-fonte
 COPY . .
+RUN npm run build
 
-EXPOSE 3000
-
-CMD ["npm", "start"]
+# Etapa 2: usar Nginx para servir a aplicação
+FROM nginx:alpine
+COPY --from=build /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
