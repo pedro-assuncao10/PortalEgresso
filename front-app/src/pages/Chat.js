@@ -25,29 +25,32 @@ export default function Chat() {
     setIdCoordenador(usuarioLogado.idCoordenador);
   }, [navigate]);
 
+  const BASE_URL = "https://merry-amazement-production.up.railway.app";
+
   useEffect(() => {
     if (!grupoId) return;
 
     // Busca mensagens do grupo e o nome do grupo
     axios
-      .get(`http://localhost:8080/api/mensagens/${grupoId}`)
+      .get(`${BASE_URL}/api/mensagens/${grupoId}`)
       .then((response) => {
         setMessages(response.data);
       })
       .catch((error) => console.error("Erro ao buscar mensagens:", error));
 
     axios
-      .get(`http://localhost:8080/api/grupos/${grupoId}`)
+      .get(`${BASE_URL}/api/grupos/${grupoId}`)
       .then((response) => setNomeGrupo(response.data.nome))
       .catch((error) => console.error("Erro ao buscar nome do grupo:", error));
   }, [grupoId]);
 
   useEffect(() => {
-    const socket = new SockJS("http://localhost:8080/ws");
+    const socket = new SockJS(`${BASE_URL}/ws`);
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
     });
+
   
     client.onConnect = () => {
       console.log("Conectado ao WebSocket");
@@ -101,7 +104,7 @@ export default function Chat() {
 
       // Envia também via HTTP para garantir persistência no banco
       const response = await axios.post(
-        `http://localhost:8080/api/mensagens/${grupoId}`,
+        `${BASE_URL}/api/mensagens/${grupoId}`,
         messageData
       );
 

@@ -42,7 +42,7 @@ export default function Vagas() {
 
     async function carregarVagas() {
         try {
-          const resposta = await axios.get("http://localhost:8080/api/vagas");
+          const resposta = await axios.get(`${BASE_URL}/api/vagas`);
           setVagas(resposta.data);
         } catch (error) {
           console.error("Erro ao buscar vagas", error);
@@ -57,7 +57,7 @@ export default function Vagas() {
       async function pegarVagasEgresso() {
         if (idCoordenador) {
           try {
-            const resposta = await axios.get(`http://localhost:8080/api/vagas/porEgresso/${idCoordenador}`);
+            const resposta = await axios.get(`${BASE_URL}/api/vagas/porEgresso/${idCoordenador}`);
             setVagasEgresso(resposta.data);
           } catch (error) {
             console.error("Erro ao buscar vagas do egresso", error);
@@ -102,7 +102,7 @@ export default function Vagas() {
             cursosDestinados: cursosSelecionados.map((id) => ({ idCurso: id })), // Certifique-se de ter um array com os cursos
           };
       
-          await axios.post("http://localhost:8080/api/vagas", vaga);
+          await axios.post(`${BASE_URL}/api/vagas`, vaga);
       
           setNovaVaga("");
           setTituloVaga(""); // Limpa o campo do título
@@ -136,7 +136,7 @@ export default function Vagas() {
             cursosDestinados: cursosSelecionados.map((id) => ({ idCurso: id })), // Converte array de IDs em objetos esperados
           };
       
-          await axios.put(`http://localhost:8080/api/vagas/${idVagaEdicao}`, vagaAtualizada);
+          await axios.put(`${BASE_URL}/api/vagas/${idVagaEdicao}`, vagaAtualizada);
       
           setPainelAberto(false);
           setModoEdicao(false);
@@ -149,7 +149,7 @@ export default function Vagas() {
     
       const deletarVaga = async (idVaga) => {
         try {
-          await axios.delete(`http://localhost:8080/api/vagas/${idVaga}`);
+          await axios.delete(`${BASE_URL}/api/vagas/${idVaga}`);
           window.location.reload();
         } catch (error) {
           console.error("Erro ao deletar vaga", error);
@@ -158,7 +158,7 @@ export default function Vagas() {
       
       const carregarCursos = async () => {
         try {
-          const response = await axios.get("http://localhost:8080/api/cursos");
+          const response = await axios.get(`${BASE_URL}/api/cursos`);
           setCursosDisponiveis(response.data); // Supondo que o backend retorna uma lista de cursos
         } catch (error) {
           console.error("Erro ao carregar cursos", error);

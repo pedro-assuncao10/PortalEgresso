@@ -24,6 +24,8 @@ export default function Depoimentos() {
     return usuario ? usuario.tipo : null; // Retorna o tipo de usuário ou null se não houver usuário
   };
 
+  const BASE_URL = "https://merry-amazement-production.up.railway.app";
+
   useEffect(() => {
     const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
     if (!usuarioLogado) {
@@ -35,7 +37,7 @@ export default function Depoimentos() {
 
     async function carregarDepoimentos() {
       try {
-        const resposta = await axios.get("http://localhost:8080/api/depoimentos");
+        const resposta = await axios.get(`${BASE_URL}/api/depoimentos`);
         setDepoimentos(resposta.data);
       } catch (error) {
         console.error("Erro ao buscar depoimentos", error);
@@ -50,7 +52,7 @@ export default function Depoimentos() {
     async function pegarIdDepoimentoEgresso() {
       if (idCoordenador) {
         try {
-          const resposta = await axios.get(`http://localhost:8080/api/depoimentos/porEgresso/${idCoordenador}`);
+          const resposta = await axios.get(`${BASE_URL}/api/depoimentos/porEgresso/${idCoordenador}`);
           setDepoimentosEgresso(resposta.data);
         } catch (error) {
           console.error("Erro ao buscar depoimentos do egresso", error);
@@ -82,7 +84,7 @@ export default function Depoimentos() {
       return;
     }
     try {
-      await axios.post("http://localhost:8080/api/depoimentos", {
+      await axios.post(`${BASE_URL}/api/depoimentos`, {
         idEgresso: idCoordenador,
         texto: novoDepoimento,
       });
@@ -97,7 +99,7 @@ export default function Depoimentos() {
   const editarDepoimento = async () => {
     console.log("Novo Depoimento:", novoDepoimento, idDepoimentoEdicao,data);
     try {
-      await axios.put("http://localhost:8080/api/depoimentos", {
+      await axios.put(`${BASE_URL}/api/depoimentos`, {
         idDepoimento: idDepoimentoEdicao,
         texto: novoDepoimento,
         idEgresso: setIdCoordenador,
@@ -116,17 +118,13 @@ export default function Depoimentos() {
 
   const deletarDepoimento = async (idDepoimento) => {
     try {
-      await axios.delete("http://localhost:8080/api/depoimentos", {
+      await axios.delete(`${BASE_URL}/api/depoimentos`, {
         data: { idDepoimento: idDepoimento },
       });
       window.location.reload();
     } catch (error) {
       console.error("Erro ao deletar depoimento", error);
     }
-  };
-
-  const iniciarChat = (nome) => {
-    alert(`Iniciando chat com ${nome}`);
   };
 
   if (loading) {

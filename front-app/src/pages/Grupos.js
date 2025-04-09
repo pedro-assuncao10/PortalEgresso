@@ -21,11 +21,12 @@ export default function Grupos() {
     const usuario = JSON.parse(localStorage.getItem("usuario"));
     return usuario ? usuario.tipo : null; // Retorna o tipo de usuário ou null se não houver usuário
   };
+  const BASE_URL = "https://merry-amazement-production.up.railway.app";
 
   // Pega os grupos do backend
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/grupos")
+      .get(`${BASE_URL}/api/grupos`)
       .then((response) => {
         const grupos = Array.isArray(response.data) ? response.data : [response.data];
         setGrupos(grupos);
@@ -58,7 +59,7 @@ export default function Grupos() {
     };
 
     try {
-      const response = await axios.post("http://localhost:8080/api/grupos", grupoData);
+      const response = await axios.post(`${BASE_URL}/api/grupos`, grupoData);
       setGrupos([...grupos, response.data]);
       setCriandoGrupo(false);
       setNovoGrupo({ nome: "", participantes: [] });

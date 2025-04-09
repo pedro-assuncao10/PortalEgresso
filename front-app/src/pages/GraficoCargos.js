@@ -17,16 +17,19 @@ export default function GraficoCargos() {
     const usuario = JSON.parse(localStorage.getItem("usuario"));
     return usuario ? usuario.tipo : null; // Retorna o tipo de usuário ou null se não houver usuário
   };
+  const BASE_URL = "https://merry-amazement-production.up.railway.app";
 
   useEffect(() => {
     async function fetchData() {
       try {
         // Buscar TODOS os egressos com cursos
-        const cursosResponse = await axios.get("http://localhost:8080/api/curso-egresso/todos");
+        const cursosResponse = await axios.get(`${BASE_URL}/api/curso-egresso/todos`);
+
         // Buscar TODOS os cargos
-        const cargosResponse = await axios.get("http://localhost:8080/api/cargos/todos");
-        //busca todos os depoimentos
-        const depoimentosResponse = await axios.get("http://localhost:8080/api/depoimentos");
+        const cargosResponse = await axios.get(`${BASE_URL}/api/cargos/todos`);
+
+        // Buscar TODOS os depoimentos
+        const depoimentosResponse = await axios.get(`${BASE_URL}/api/depoimentos`);
 
         setDepoimentos(depoimentosResponse.data);
 

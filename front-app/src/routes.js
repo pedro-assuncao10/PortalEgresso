@@ -29,7 +29,6 @@ export default function AppRoutes() {
           <Route path="/vagas" element={<Vagas />} />
           <Route path="/grupos" element={<Grupos />} />
           <Route path="/chat/:grupoId" element={<Chat />} />
-          <Route path="/cadastroEgresso" element={<CadastroEgresso />} />
         </Route>
       </Routes>
     </Router>
