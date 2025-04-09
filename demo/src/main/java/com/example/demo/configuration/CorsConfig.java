@@ -20,7 +20,7 @@ public class CorsConfig {
 
         // 🔥 Permitir apenas origens específicas para maior segurança
         //config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080"));
-        config.addAllowedOriginPattern("*"); // 🔥 substitui o setAllowedOrigins
+        config.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "https://portalegresso-production-6047.up.railway.app/"));
 
 
         // 🔥 Permitir métodos HTTP
