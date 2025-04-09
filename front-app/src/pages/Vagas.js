@@ -29,7 +29,8 @@ export default function Vagas() {
       const usuario = JSON.parse(localStorage.getItem("usuario"));
       return usuario ? usuario.tipo : null; // Retorna o tipo de usuário ou null se não houver usuário
     };
-
+    
+    const BASE_URL = "https://merry-amazement-production.up.railway.app";
 
     useEffect(() => {
     const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
