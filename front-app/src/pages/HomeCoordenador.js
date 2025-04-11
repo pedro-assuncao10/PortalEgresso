@@ -33,6 +33,7 @@ const HomeCoordenador = () => {
   const [painelAbertoCriarEgresso, setPainelAbertoCriarEgresso] = useState(false);
   const [egresso, setEgresso] = useState({ nome: "", email: "", descricao: "", foto: "", linkedin: "", instagam: "", curriculo: "", idCurso: "", anoInicio: "", anoFim: "" });
   const [egressos, setEgressos] = useState([]);
+  const BASE_URL = "https://merry-amazement-production.up.railway.app";
 
   useEffect(() => {
     const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
