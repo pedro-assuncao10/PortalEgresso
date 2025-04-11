@@ -26,8 +26,10 @@ const Home = () => {
   const [curso, setCurso] = useState({ idCurso: "", nome: "", nivel: "", idCoordenador: "" });
   const [cursos, setCursos] = useState([]);
 
+  const [painelSelecaoAbertoEgresso, setPainelSelecaoAbertoEgresso] = useState(false);
   const [painelAbertoEgresso, setPainelAbertoEgresso] = useState(false);
   const [egresso, setEgresso] = useState({ nome: "", email: "", descricao: "", foto: "", linkedin: "", instagam: "", curriculo: "", idCurso: "", anoInicio: "", anoFim: "" });
+  const [egressos, setEgressos] = useState([]);
   const BASE_URL = "https://merry-amazement-production.up.railway.app";
 
   useEffect(() => {
@@ -347,6 +349,9 @@ const Home = () => {
       alert("Erro ao enviar imagem: " + error.message);
     }
   };
+  
+  
+  
   
   return (
     <Box display="flex" flexDirection="column" alignItems="center" p={3}>
