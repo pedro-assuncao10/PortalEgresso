@@ -258,6 +258,15 @@ const Home = () => {
       });
   };
 
+  // Estado para o painel de listagem de cursos
+  const [painelListarCursosAberto, setPainelListarCursosAberto] = useState(false);
+
+
+  // Função para fechar o painel de listagem de cursos
+  const fecharPainelListarCursos = () => {
+    setPainelListarCursosAberto(false);
+  };
+
   const editarEgresso = async () => {
     if (!egresso.idEgresso) {
       alert("Erro: ID do egresso não encontrado.");
