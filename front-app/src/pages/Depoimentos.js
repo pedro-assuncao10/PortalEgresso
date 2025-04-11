@@ -140,7 +140,7 @@ export default function Depoimentos() {
           onClick={() => {
             const tipoUsuario = verificarTipoUsuario();
 
-            if (tipoUsuario === "coordenador") {
+            if (tipoUsuario === "coordenador" || tipoUsuario === "super") {
               navigate("/homeCoordenador"); // Navega para a Home do Coordenador
             } else {
               navigate("/home"); // Navega para a Home do Egresso

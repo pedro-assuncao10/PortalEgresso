@@ -88,7 +88,7 @@ export default function Grupos() {
       <AppBar position="static" sx={{ backgroundColor: "#4CAF50" }}>
         <Toolbar>
           <IconButton
-            edge="start" color="inherit" onClick={() => { const tipoUsuario = verificarTipoUsuario(); if (tipoUsuario === "coordenador") {navigate("/homeCoordenador");} else {navigate("/home");}}}>
+            edge="start" color="inherit" onClick={() => { const tipoUsuario = verificarTipoUsuario(); if (tipoUsuario === "coordenador" || tipoUsuario === "super") {navigate("/homeCoordenador");} else {navigate("/home");}}}>
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h6" sx={{ flexGrow: 1, textAlign: "center" }}>

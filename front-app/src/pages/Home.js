@@ -26,10 +26,9 @@ const Home = () => {
   const [curso, setCurso] = useState({ idCurso: "", nome: "", nivel: "", idCoordenador: "" });
   const [cursos, setCursos] = useState([]);
 
-  const [painelSelecaoAbertoEgresso, setPainelSelecaoAbertoEgresso] = useState(false);
   const [painelAbertoEgresso, setPainelAbertoEgresso] = useState(false);
   const [egresso, setEgresso] = useState({ nome: "", email: "", descricao: "", foto: "", linkedin: "", instagam: "", curriculo: "", idCurso: "", anoInicio: "", anoFim: "" });
-  const [egressos, setEgressos] = useState([]);
+  const BASE_URL = "https://merry-amazement-production.up.railway.app";
 
   useEffect(() => {
     const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
@@ -42,14 +41,14 @@ const Home = () => {
     const idCoordenador = usuarioLogado.idCoordenador; // Pega o ID salvo no login
     console.log(idCoordenador);
     // Buscar os dados do egresso
-    axios.get(`http://localhost:8080/api/egressos/${idCoordenador}`)
+    axios.get(`${BASE_URL}/api/egressos/${idCoordenador}`)
       .then(response => {
         if (!response.data) {
           throw new Error("Egresso não encontrado.");
         }
         setEgresso(response.data); // Atualiza o estado corretamente
         // Buscar os dados do cargo associado ao egresso
-        return axios.get(`http://localhost:8080/api/cargos/porEgresso/${idCoordenador}`);
+        return axios.get(`${BASE_URL}/api/cargos/porEgresso/${idCoordenador}`);
       })
       .then(response => {
         if (response.data.length > 0) {
@@ -60,7 +59,7 @@ const Home = () => {
         console.error("Erro ao buscar dados do egresso:", error);
       });
       // Buscar o depoimento do egresso${idCoordenador}
-      axios.get(`http://localhost:8080/api/depoimentos/porEgresso/${idCoordenador}`)
+      axios.get(`${BASE_URL}/api/depoimentos/porEgresso/${idCoordenador}`)
       .then(response => {
         if (response.data.length > 0) {//verifica se há depoimentos
           setEgresso(prevState => ({ ...prevState, texto : response.data[0].texto }));
@@ -74,7 +73,7 @@ const Home = () => {
 
   useEffect(() => {
     if (egresso?.idEgresso) {
-      axios.get(`http://localhost:8080/api/cargos/porEgresso/${egresso.idEgresso}`)
+      axios.get(`${BASE_URL}/api/cargos/porEgresso/${egresso.idEgresso}`)
         .then(response => {
           setCargosEgresso(response.data);
         })
@@ -118,7 +117,7 @@ const Home = () => {
   
   const criarCargo = () => {
     const novoCargo = { ...cargo, idEgresso: egresso?.idEgresso };
-    axios.post("http://localhost:8080/api/cargos/criar", novoCargo)
+    axios.post(`${BASE_URL}/api/cargos/criar`, novoCargo)
       .then(response => {
         alert("Cargo criado com sucesso!");
       })
@@ -135,7 +134,7 @@ const Home = () => {
       idCargo: cargoSelecionado.idCargo 
     };
   
-    axios.put(`http://localhost:8080/api/cargos/atualizar`, cargoEditado) // Removido o ID da URL
+    axios.put(`${BASE_URL}/api/cargos/atualizar`, cargoEditado) // Removido o ID da URL
       .then(response => {
         setPainelAberto(false);
         setModoEdicao(false);
@@ -151,7 +150,7 @@ const Home = () => {
 
   const deletarCargo = (idCargo) => {
     console.log(idCargo);
-    axios.delete("http://localhost:8080/api/cargos/deletar", {
+    axios.delete(`${BASE_URL}/api/cargos/deletar`, {
       data: { idCargo: idCargo } // Corpo da requisição
     })
     .then(response => {
@@ -164,26 +163,8 @@ const Home = () => {
   };
   
 
-  const handleCargoClick = (idCargo) => {
-    let clickTimer = null;
-  
-    if (clickTimer) {
-      clearTimeout(clickTimer);
-      clickTimer = null;
-      if (window.confirm("Tem certeza que deseja deletar este cargo?")) {
-        deletarCargo(idCargo);
-        setPainelSelecaoAberto(false);
-      }
-    } else {
-      clickTimer = setTimeout(() => {
-        abrirPainelEdicao(idCargo);
-        clickTimer = null;
-      }, 300); // Tempo para diferenciar clique simples de duplo
-    }
-  };
-
   //curso e egresso
-  const API_URL = "http://localhost:8080/api/cursos"; // Ajuste conforme necessário
+  const API_URL = `${BASE_URL}/api/cursos`; 
 
   // Função para abrir o painel de edição
   const abrirPainelEdicaoCurso = (idCurso) => {
@@ -275,20 +256,6 @@ const Home = () => {
       });
   };
 
-  // Estado para o painel de listagem de cursos
-  const [painelListarCursosAberto, setPainelListarCursosAberto] = useState(false);
-
-  // Função para abrir o painel e carregar os cursos
-  const abrirPainelListarCursos = () => {
-    listarCursos(); // Atualiza a lista de cursos ao abrir o painel
-    setPainelListarCursosAberto(true);
-  };
-
-  // Função para fechar o painel de listagem de cursos
-  const fecharPainelListarCursos = () => {
-    setPainelListarCursosAberto(false);
-  };
-
   const editarEgresso = async () => {
     if (!egresso.idEgresso) {
       alert("Erro: ID do egresso não encontrado.");
@@ -296,7 +263,7 @@ const Home = () => {
     }
   
     try {
-      const url = `http://localhost:8080/api/egressos/${egresso.idEgresso}?idCurso=${egresso.idCurso || 0}&anoInicio=${egresso.anoInicio || 0}&anoFim=${egresso.anoFim || ""}`;
+      const url = `${BASE_URL}/api/egressos/${egresso.idEgresso}?idCurso=${egresso.idCurso || 0}&anoInicio=${egresso.anoInicio || 0}&anoFim=${egresso.anoFim || ""}`;
   
       const response = await fetch(url, {
         method: "PUT",
@@ -341,7 +308,7 @@ const Home = () => {
     }
   
     try {
-      const response = await fetch(`http://localhost:8080/api/egressos/${egresso.idEgresso}`, {
+      const response = await fetch(`${BASE_URL}/api/egressos/${egresso.idEgresso}`, {
         method: "DELETE",
       });
   
@@ -356,42 +323,6 @@ const Home = () => {
       alert("Erro ao deletar egresso: " + error.message);
     }
   };
-  
-
-  const handleCursoClick = (idCurso) => {
-    const cursoSelecionado = cursos.find((c) => c.idCurso === idCurso);
-    setCurso(cursoSelecionado);
-    setPainelAbertoCurso(true);
-  };
-
-  const handleEgressoClick = (nome) => {
-    const egressoSelecionado = egressos.find((e) => e.nome === nome);
-    setEgresso(egressoSelecionado);
-    setPainelAbertoEgresso(true);
-  };
-
-  const enviarFoto = async (arquivo) => {
-    const formData = new FormData();
-    formData.append("file", arquivo);
-  
-    try {
-      const resposta = await fetch("http://localhost:8080/api/egressos/upload", {
-        method: "POST",
-        body: formData,
-      });
-  
-      if (!resposta.ok) {
-        throw new Error("Erro ao enviar a imagem.");
-      }
-  
-      const caminhoImagem = await resposta.text(); // Ex: "/uploads/imagem.jpg"
-      return caminhoImagem;
-    } catch (erro) {
-      console.error("Erro no upload da imagem:", erro);
-      alert("Erro ao fazer upload da imagem.");
-      return null;
-    }
-  };
 
   const handleSelecionarImagem = async (event) => {
     const file = event.target.files[0];
@@ -401,7 +332,7 @@ const Home = () => {
     formData.append("file", file);
   
     try {
-      const response = await fetch("http://localhost:8080/api/upload/foto", {
+      const response = await fetch(`${BASE_URL}/api/upload/foto`, {
         method: "POST",
         body: formData,
       });
@@ -416,9 +347,6 @@ const Home = () => {
       alert("Erro ao enviar imagem: " + error.message);
     }
   };
-  
-  
-  
   
   return (
     <Box display="flex" flexDirection="column" alignItems="center" p={3}>
@@ -499,7 +427,7 @@ const Home = () => {
               src={
                 egresso?.foto?.startsWith("http")
                   ? egresso.foto
-                  : `http://localhost:8080/uploads/${egresso?.foto}`
+                  : `${BASE_URL}/uploads/${egresso?.foto}`
               }
               sx={{ width: 80, height: 80, mb: 1 }}
             />
